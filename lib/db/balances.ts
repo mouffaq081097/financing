@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Balance } from '@/types'
 
 export async function getBalances(): Promise<Balance[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('balances')
     .select('*, accounts(*)')
@@ -12,13 +12,13 @@ export async function getBalances(): Promise<Balance[]> {
 }
 
 export async function addBalanceSnapshot(input: { account_id: string; amount: number; recorded_at: string }): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('balances').insert(input)
   if (error) throw error
 }
 
 export async function getNetWorthHistory(): Promise<{ date: string; net_worth: number }[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('balances')
     .select('amount, recorded_at, accounts(type)')

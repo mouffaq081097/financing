@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Income, IncomeSource } from '@/types'
 
 export async function getIncome(filters?: { month?: number; year?: number }): Promise<Income[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   let query = supabase.from('income').select('*, accounts(*)').order('date', { ascending: false })
 
   if (filters?.month && filters?.year) {
@@ -19,7 +19,7 @@ export async function getIncome(filters?: { month?: number; year?: number }): Pr
 export async function addIncome(input: {
   account_id: string; amount: number; source: IncomeSource; description?: string; date: string
 }): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('income').insert(input)
   if (error) throw error
 }

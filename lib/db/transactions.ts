@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Transaction } from '@/types'
 
 export async function getTransactions(filters?: {
@@ -7,7 +7,7 @@ export async function getTransactions(filters?: {
   account_id?: string
   category_id?: string
 }): Promise<Transaction[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   let query = supabase
     .from('transactions')
     .select('*, categories(*), accounts(*)')
@@ -27,19 +27,19 @@ export async function getTransactions(filters?: {
 }
 
 export async function updateTransactionCategory(id: string, category_id: string): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('transactions').update({ category_id }).eq('id', id)
   if (error) throw error
 }
 
 export async function bulkInsertTransactions(rows: Omit<Transaction, 'id' | 'created_at' | 'categories' | 'accounts'>[]): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('transactions').insert(rows)
   if (error) throw error
 }
 
 export async function getMonthlySummary(year: number): Promise<{ month: number; credit_total: number; debit_total: number }[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('transactions')
     .select('date, amount, type, source')
@@ -62,7 +62,7 @@ export async function getMonthlySummary(year: number): Promise<{ month: number; 
 }
 
 export async function getCategoryTotals(month: number, year: number): Promise<{ category_id: string; total: number; category_name: string; color: string }[]> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const start = `${year}-${String(month).padStart(2, '0')}-01`
   const end = new Date(year, month, 0).toISOString().split('T')[0]
 

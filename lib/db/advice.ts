@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { AiAdvice } from '@/types'
 
 export async function getAdvice(month: number, year: number): Promise<AiAdvice | null> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('ai_advice')
     .select('*')
@@ -14,7 +14,7 @@ export async function getAdvice(month: number, year: number): Promise<AiAdvice |
 }
 
 export async function saveAdvice(month: number, year: number, content: string): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase
     .from('ai_advice')
     .upsert({ month, year, content, generated_at: new Date().toISOString() }, { onConflict: 'month,year' })
